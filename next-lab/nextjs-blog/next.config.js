@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+const __DEV__ = process.env.NODE_ENV === "development";
+
 const withAntdLess = require("next-plugin-antd-less");
 
 const nextConfig = withAntdLess({
