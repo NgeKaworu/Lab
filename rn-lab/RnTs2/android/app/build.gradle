@@ -134,7 +134,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.rnts"
+        applicationId "com.rnts2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -157,7 +157,7 @@ android {
                     cppFlags "-std=c++17"
                     // Make sure this target name is the same you specify inside the
                     // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
-                    targets "rnts_appmodules"
+                    targets "rnts2_appmodules"
                 }
             }
             if (!enableSeparateBuildPerCPUArchitecture) {
@@ -256,11 +256,6 @@ android {
 }
 
 dependencies {
-    implementation 'com.liulishuo.filedownloader:library:1.7.4' // 文件下载
-    implementation "com.squareup.okhttp3:okhttp:3.12.0" // 网络请求
-    implementation 'com.google.code.gson:gson:2.8.5' // json转换
-    implementation 'com.android.support:recyclerview-v7:28.0.0' //列表展示
-
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     //noinspection GradleDynamicVersion
@@ -289,12 +284,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-        // 云从 SDK 封装
-    implementation project(path: ':cloudwalkface')
-    // 动态权限申请
-    implementation "com.github.permissions-dispatcher:permissionsdispatcher:4.9.1"
-    annotationProcessor "com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.1"
 }
 
 if (isNewArchitectureEnabled()) {
