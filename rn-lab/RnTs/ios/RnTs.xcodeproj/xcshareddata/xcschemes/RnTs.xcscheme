@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "RnTs.app"
-               BlueprintName = "RnTs"
-               ReferencedContainer = "container:RnTs.xcodeproj">
+               BuildableName = "rnts.app"
+               BlueprintName = "rnts"
+               ReferencedContainer = "container:rnts.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "RnTsTests.xctest"
-               BlueprintName = "RnTsTests"
-               ReferencedContainer = "container:RnTs.xcodeproj">
+               BuildableName = "rntsTests.xctest"
+               BlueprintName = "rntsTests"
+               ReferencedContainer = "container:rnts.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "RnTs.app"
-            BlueprintName = "RnTs"
-            ReferencedContainer = "container:RnTs.xcodeproj">
+            BuildableName = "rnts.app"
+            BlueprintName = "rnts"
+            ReferencedContainer = "container:rnts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "RnTs.app"
-            BlueprintName = "RnTs"
-            ReferencedContainer = "container:RnTs.xcodeproj">
+            BuildableName = "rnts.app"
+            BlueprintName = "rnts"
+            ReferencedContainer = "container:rnts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
