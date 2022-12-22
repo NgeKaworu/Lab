@@ -1,4 +1,17 @@
+/*
+ * @Author: fuRan NgeKaworu@gmail.com
+ * @Date: 2022-10-14 14:38:37
+ * @LastEditors: fuRan NgeKaworu@gmail.com
+ * @LastEditTime: 2022-10-14 16:40:51
+ * @FilePath: /rnts/Users/furan/Code/fuRan/Lab/rn-lab/RnTs/android/app/src/main/java/com/rnts/MainActivity.java
+ * @Description: 
+ * 
+ * Copyright (c) 2022 by fuRan NgeKaworu@gmail.com, All Rights Reserved. 
+ */
 package com.rnts;
+
+import android.content.Intent;
+import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
