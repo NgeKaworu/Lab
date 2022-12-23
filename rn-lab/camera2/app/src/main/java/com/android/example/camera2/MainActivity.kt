@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import android.view.Surface
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -51,8 +52,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewBinding.cameraToggle.setOnClickListener {
-            faceScanner.toggleCamera {
-                Log.i(TAG, "cameraToggle click: $it")
+            faceScanner.toggleCamera { camera ->
+                if (camera != null) {
+                    faceScanner.addSurface(Surface(viewBinding.textureView.surfaceTexture))
+                    faceScanner.createCaptureSession(camera) { session ->
+                        if (session != null) {
+                            faceScanner.resetRepeatingRequest(session)
+                        }
+
+                    }
+                }
             }
         }
 
