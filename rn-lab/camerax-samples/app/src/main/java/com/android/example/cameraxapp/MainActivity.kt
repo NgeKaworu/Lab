@@ -23,6 +23,7 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.camera.core.CameraX;
 
 typealias LumaListener = (luma: Double) -> Unit
 
@@ -64,8 +65,9 @@ class MainActivity : AppCompatActivity() {
         // Used to bind the lifecycle of cameras to the lifecycle owner
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
         // Preview
-        val preview = Preview.Builder().build().also {
-            it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
+        val preview = Preview.Builder()
+            .build().apply {
+            setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
         }
 
         imageCapture = ImageCapture.Builder().build()
@@ -78,21 +80,28 @@ class MainActivity : AppCompatActivity() {
 
         val recorder = Recorder.Builder().setQualitySelector(
             QualitySelector.from(
-                Quality.SD,
-                FallbackStrategy.higherQualityOrLowerThan(Quality.HIGHEST),
+                Quality.HD,
             )
         ).build()
         videoCapture = VideoCapture.withOutput(recorder)
 
+        // Select lensFacing depending on the available cameras
+        val lensFacing = when {
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true -> CameraSelector.LENS_FACING_BACK
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true -> CameraSelector.LENS_FACING_FRONT
+            else -> throw IllegalStateException("Back and front camera are unavailable")
+        }
         // Select back camera as a default
-        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+
         val bool = true
         val useCaseGroup = UseCaseGroup.Builder().apply {
+//            addUseCase(imageCapture!!)
+            addUseCase(videoCapture!!)
             if (bool) {
                 addUseCase(preview)
             }
-            addUseCase(imageCapture!!)
-            addUseCase(videoCapture!!)
+
 
         }.build();
 
@@ -101,6 +110,7 @@ class MainActivity : AppCompatActivity() {
             this, cameraSelector, useCaseGroup
         )
     }
+
 
     private fun unbind() {
 
@@ -263,7 +273,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {

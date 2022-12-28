@@ -34,6 +34,8 @@ class FaceScanner(context: Context) {
 
     private var cameraDevice: CameraDevice? = null
 
+    private var _session: CameraCaptureSession? = null
+
 
     // 镜头消费者
     private val imageReader = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 1)
@@ -56,7 +58,7 @@ class FaceScanner(context: Context) {
         }
     }
 
-    private fun openCamera(callback: (camera: CameraDevice?) -> Unit) {
+    fun openCamera(callback: (camera: CameraDevice?) -> Unit) {
         // 开启摄像头
         if (ActivityCompat.checkSelfPermission(ctx,
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
@@ -100,7 +102,7 @@ class FaceScanner(context: Context) {
             cameraDevice = null
         }
 
-        if(targets.size > 0){
+        if (targets.size > 0) {
             targets.clear()
         }
     }
@@ -110,44 +112,33 @@ class FaceScanner(context: Context) {
         camera: CameraDevice,
         callback: (session: CameraCaptureSession?) -> Unit,
     ) {
-        camera.createCaptureSession(
-            SessionConfiguration(SessionConfiguration.SESSION_REGULAR,
-                targets.map { surface ->
-                    OutputConfiguration(surface)
-                },
-                { it.run() },
-                object : CameraCaptureSession.StateCallback() {
-                    override fun onConfigured(session: CameraCaptureSession) {
-                        Log.i(TAG, "onConfigured: ")
-                        callback(session)
+        val cfg = SessionConfiguration(SessionConfiguration.SESSION_REGULAR,
+            targets.map { surface ->
+                OutputConfiguration(surface)
+            },
+            { it.run() },
+            object : CameraCaptureSession.StateCallback() {
+                override fun onConfigured(session: CameraCaptureSession) {
+                    Log.i(TAG, "onConfigured: ")
+                    _session = session
+                    callback(session)
+                }
 
-                    }
+                override fun onConfigureFailed(session: CameraCaptureSession) {
+                    Log.e(TAG, "onConfigureFailed: ")
+                    session.close()
+                    callback(null)
+                    _session = null
+                }
+            })
 
-                    override fun onConfigureFailed(session: CameraCaptureSession) {
-                        Log.e(TAG, "onConfigureFailed: ")
-                        session.close()
-                        callback(null)
-                    }
-                }))
+
+        camera.createCaptureSession(cfg)
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     fun addSurface(surface: Surface) {
         targets.add(surface)
-    }
-
-    fun resetRepeatingRequest(session: CameraCaptureSession) {
-        // 创建捕获
-        val captureRequestBuild =
-            session.device.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-                .apply {
-                    targets.forEach { surface -> addTarget(surface) }
-                }.build()
-
-
-        // 开始捕获
-        session.setRepeatingRequest(captureRequestBuild,
-            null,
-            cameraHandler)
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -159,6 +150,8 @@ class FaceScanner(context: Context) {
 
         // 输出配置
         val cfg = OutputConfiguration(imageReader.surface)
+
+
 
         if (ActivityCompat.checkSelfPermission(ctx,
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
@@ -224,6 +217,30 @@ class FaceScanner(context: Context) {
             }
 
         }, cameraHandler)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun reConfiguration(callback: (session: CameraCaptureSession?) -> Unit) {
+        _session?.close()
+        cameraDevice?.let { createCaptureSession(it, callback) }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun resetRepeatingRequest(session: CameraCaptureSession) {
+        // 创建捕获
+        val captureRequestBuild =
+            session.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+                .apply {
+                    targets.forEach { surface -> addTarget(surface) }
+                }.build()
+
+
+        // 开始捕获
+        session.setRepeatingRequest(captureRequestBuild,
+            null,
+            cameraHandler)
+
+
     }
 
 
@@ -316,6 +333,19 @@ class FaceScanner(context: Context) {
             uBuffer[nv21, ySize + vSize, uSize]
             return nv21
         }
+    }
+}
+
+fun Image.YUV_420_888toNV21(): ByteArray? {
+    return if (format == ImageFormat.YUV_420_888) {
+        val data = ByteArray(planes[0].buffer.capacity() * 3 / 2)
+        val buff0Offset: Int = planes[0].buffer.capacity()
+
+        planes[0].buffer.get(data, 0, buff0Offset)
+        planes[2].buffer.get(data, buff0Offset, planes[2].buffer.capacity())
+        data
+    } else {
+        null
     }
 }
 
